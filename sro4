@@ -1,0 +1,81 @@
+package kz.ektu.ernur.adilbekov.sro.variant;
+import java.util.*;
+class InvalidAgeException extends Exception {
+    public InvalidAgeException(String message) {
+        super(message);
+    }
+}
+class StudentNotFoundException extends Exception {
+    public StudentNotFoundException(String message) {
+        super(message);
+    }
+}
+class LowGradeException extends Exception {
+    public LowGradeException(String message) {
+        super(message);
+    }
+}
+class Student {
+    private final String name;
+    private final int age;
+
+    public Student(String name, int age) throws InvalidAgeException {
+        if (age < 18) {
+            throw new InvalidAgeException("Возраст студента меньше 18 лет: " + age);
+        }
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+class School {
+    private final List<Student> students = new ArrayList<>();
+
+    public void addStudent(String name, int age) {
+        try {
+            students.add(new Student(name, age));
+            System.out.println(" Добавлен студент: " + name);
+        } catch (InvalidAgeException e) {
+            System.out.println(" Ошибка добавления: " + e.getMessage());
+        }
+    }
+    public List<Student> getStudents() {
+        return students;
+    }
+}
+public class Main {
+    public static void findGrade(Map<String, Integer> grades, String student)
+            throws StudentNotFoundException, LowGradeException {
+        Integer grade = grades.get(student);
+        if (grade == null) {
+            throw new StudentNotFoundException(" Студент " + student + " не найден в журнале");
+        }
+        if (grade < 50) {
+            throw new LowGradeException("️ У студента " + student + " низкая оценка: " + grade);
+        }
+        System.out.println(" Оценка студента " + student + ": " + grade);
+    }
+    public static void main(String[] args) {
+        School school = new School();
+        String[] names = {"Ернур", "Ермек", "Амир"};
+        int[] ages = {20, 16, 19};
+        for (int i = 0; i < names.length; i++) {
+            school.addStudent(names[i], ages[i]);
+        }
+        Map<String, Integer> grades = new TreeMap<>();
+        grades.put("Ернур", 85);
+        grades.put("Амир", 45);
+        for (String name : new String[]{"Ернур", "Амир", "Руслан"}) {
+            try {
+                findGrade(grades, name);
+            } catch (StudentNotFoundException | LowGradeException e) {
+                System.out.println("Ошибка: " + e.getMessage());
+            } finally {
+                System.out.println("➡ Проверка завершена для: " + name + "\n");
+            }
+        }
+    }
+}
